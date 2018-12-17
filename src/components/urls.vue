@@ -4,10 +4,16 @@
             <q-icon name="apps" class="q-mx-md"/>
             {{title}}
         </q-list-header>
+        <q-item v-for="url in singleUrlList" :key="url.name">
+            <q-item-side :icon="url.icon"></q-item-side>
+            <q-item-main>
+                {{url.name}}
+            </q-item-main>
+        </q-item>
         <q-collapsible :icon="url.icon" v-for="url in topUrlList" :key="url.name" :label="url.name">
-            <q-item v-for="sub in url.subUrl" :key="sub.name">
+            <q-item v-for="sub in url.subUrl" :key="sub.name" @click="openURL('/'+url.link+'/'+sub.link)">
                 <q-item-side :icon="sub.icon"></q-item-side>
-                <q-item-main @click="openURL('/'+url.link+'/'+sub.link)">
+                <q-item-main>
                     {{sub.name}}
                 </q-item-main>
             </q-item>
@@ -34,7 +40,11 @@
         }
 
         isTop() {
-            return !this.subUrl == [];
+            return Boolean(this.subUrl.length);
+        }
+
+        isSingle() {
+            return !this.subUrl.length;
         }
     }
 
@@ -46,8 +56,8 @@
                 title: '控制面板导航',
                 urls: [
                     new Url('主页', 'index', 'home'),
-                    new Url('设置', 'setttings', 'settings', [
-                        new Url('偏好设置', 'preferance', 'settings'),
+                    new Url('设置', 'settings', 'settings_applications', [
+                        new Url('偏好设置', 'preference', 'settings'),
                         new Url('任务设置', 'tasks', 'settings')
                     ])
                 ]
@@ -55,13 +65,14 @@
         },
         computed: {
             topUrlList() {
-                let res = [];
-                for (let url of this.urls) {
-                    if (url.isTop()) {
-                        res.push(url)
-                    }
-                }
-                return res
+                return this.urls.filter(function (url) {
+                    return url.isTop()
+                })
+            },
+            singleUrlList() {
+                return this.urls.filter(function (url) {
+                    return url.isSingle()
+                })
             }
         },
         methods: {
