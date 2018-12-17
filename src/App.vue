@@ -1,83 +1,49 @@
 <template>
-    <q-layout id="q-app" view="lHh Lpr lFf">
+    <q-layout view="hHh lpr lFr">
         <q-layout-header>
-            <q-toolbar
-                    color="primary"
-                    :glossy="$q.theme === 'mat'"
-                    :inverted="$q.theme === 'ios'"
-            >
-                <q-btn
-                        flat
-                        dense
-                        round
-                        @click="leftDrawerOpen = !leftDrawerOpen"
-                        aria-label="Menu"
-                        icon="menu"
-                />
-
-                <q-toolbar-title>
-                    Quasar App
-                    <div slot="subtitle">Running on Quasar v{{ $q.version }}</div>
-                </q-toolbar-title>
+            <q-toolbar color="primary">
+                <q-btn @click="changeDrawer()" icon="menu" flat round dense>
+                </q-btn>
+                <q-toolbar-title>{{currentTitle}}</q-toolbar-title>
             </q-toolbar>
         </q-layout-header>
-
-        <q-layout-drawer
-                v-model="leftDrawerOpen"
-                :content-class="$q.theme === 'mat' ? 'bg-grey-2' : null"
-        >
-            <q-list
-                    no-border
-                    link
-                    inset-delimiter
-            >
-                <q-list no-border link inset-delimiter>
-                    <q-list-header>Essential Links</q-list-header>
-                    <q-item @click.native="openURL('http://quasar-framework.org')">
-                        <q-item-side icon="school"/>
-                        <q-item-main label="Docs" sublabel="quasar-framework.org"></q-item-main>
-                    </q-item>
-                    <q-item @click.native="openURL('https://discord.gg/5TDhbDg')">
-                        <q-item-side icon="chat"/>
-                        <q-item-main label="Discord Chat Channel" sublabel="https://discord.gg/5TDhbDg"></q-item-main>
-                    </q-item>
-                    <q-item @click.native="openURL('http://forum.quasar-framework.org')">
-                        <q-item-side icon="forum"/>
-                        <q-item-main label="Forum" sublabel="forum.quasar-framework.org"></q-item-main>
-                    </q-item>
-                    <q-item @click.native="openURL('https://twitter.com/quasarframework')">
-                        <q-item-side icon="rss feed"/>
-                        <q-item-main label="Twitter" sublabel="@quasarframework"></q-item-main>
-                    </q-item>
-                </q-list>
-            </q-list>
+        <q-layout-drawer v-model="leftDrawerOpen" side="left" content-class="bg-grey-3"
+                         :content-style="{padding: '3px'}">
+            <urls/>
         </q-layout-drawer>
-
         <q-page-container>
-            <HelloWorld/>
+
         </q-page-container>
     </q-layout>
 </template>
 
 <script>
-    import {openURL} from 'quasar'
-import HelloWorld from './components/HelloWorld.vue'
+    import QLayout from "quasar-framework/src/components/layout/QLayout";
+    import QLayoutHeader from "quasar-framework/src/components/layout/QLayoutHeader";
+    import QLayoutDrawer from "quasar-framework/src/components/layout/QLayoutDrawer";
+    import QPageContainer from "quasar-framework/src/components/layout/QPageContainer";
+    import QToolbar from "quasar-framework/src/components/toolbar/QToolbar";
+    import QToolbarTitle from "quasar-framework/src/components/toolbar/QToolbarTitle";
+    import QBtn from "quasar-framework/src/components/btn/QBtn";
+    import Urls from "@/components/urls";
 
-export default {
-    name: 'LayoutDefault',
-  components: {
-    HelloWorld
-  },
-    data() {
-        return {
-            leftDrawerOpen: this.$q.platform.is.desktop
+    export default {
+        components: {Urls, QBtn, QToolbarTitle, QToolbar, QPageContainer, QLayoutDrawer, QLayoutHeader, QLayout},
+        data() {
+            return {
+                subtitle: '',
+                currentTitle: this.subtitle ? '智能空调控制器' + this.subtitle : '智能空调控制器',
+                leftDrawerOpen: false
+            }
+        },
+        methods: {
+            changeDrawer() {
+                this.leftDrawerOpen = !this.leftDrawerOpen
+            }
         }
-    },
-    methods: {
-        openURL
     }
-}
 </script>
 
 <style>
+
 </style>
