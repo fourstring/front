@@ -1,20 +1,21 @@
 <template>
     <q-list separator link>
         <q-list-header>
-            <q-icon name="apps" class="q-mx-md"/>
+            <q-icon name="apps" class="q-mr-md"/>
             {{title}}
         </q-list-header>
-        <q-item v-for="url in singleUrlList" :key="url.name">
-            <q-item-side :icon="url.icon"></q-item-side>
+        <q-item v-for="route in singleRoutesList" :key="route.name">
+            <q-item-side :icon="route.meta.displayIcon"></q-item-side>
             <q-item-main>
-                {{url.name}}
+                <router-link :to="{name: route.name}" class="drawer-link">{{route.meta.displayText}}</router-link>
             </q-item-main>
         </q-item>
-        <q-collapsible :icon="url.icon" v-for="url in topUrlList" :key="url.name" :label="url.name">
-            <q-item v-for="sub in url.subUrl" :key="sub.name" @click="openURL('/'+url.link+'/'+sub.link)">
-                <q-item-side :icon="sub.icon"></q-item-side>
+        <q-collapsible v-for="route in topRoutesList" :key="route.name" :label="route.meta.displayText"
+                       :icon="route.meta.displayIcon">
+            <q-item v-for="child in route.children" :key="child.name">
+                <q-item-side :icon="child.meta.displayIcon"></q-item-side>
                 <q-item-main>
-                    {{sub.name}}
+                    <router-link :to="{name: child.name}" class="drawer-link">{{child.meta.displayText}}</router-link>
                 </q-item-main>
             </q-item>
         </q-collapsible>
@@ -29,24 +30,8 @@
     import QIcon from "quasar-framework/src/components/icon/QIcon";
     import QItemSide from "quasar-framework/src/components/list/QItemSide";
     import QItemMain from "quasar-framework/src/components/list/QItemMain";
-    import {openURL} from 'quasar'
+    import {routes} from "@/router";
 
-    class Url {
-        constructor(name, link, icon = '', subs = []) {
-            this.name = name;
-            this.link = link;
-            this.icon = icon;
-            this.subUrl = subs;
-        }
-
-        isTop() {
-            return Boolean(this.subUrl.length);
-        }
-
-        isSingle() {
-            return !this.subUrl.length;
-        }
-    }
 
     export default {
         name: "urls",
@@ -54,33 +39,32 @@
         data() {
             return {
                 title: '控制面板导航',
-                urls: [
-                    new Url('主页', 'index', 'home'),
-                    new Url('设置', 'settings', 'settings_applications', [
-                        new Url('偏好设置', 'preference', 'settings'),
-                        new Url('任务设置', 'tasks', 'settings')
-                    ])
-                ]
+                routes
             }
         },
         computed: {
-            topUrlList() {
-                return this.urls.filter(function (url) {
-                    return url.isTop()
+            topRoutesList() {
+                return this.routes.filter(function (route) {
+                    return Boolean(route.children) && route.meta.sideDisplay
                 })
             },
-            singleUrlList() {
-                return this.urls.filter(function (url) {
-                    return url.isSingle()
+            singleRoutesList() {
+                return this.routes.filter(function (route) {
+                    return !route.children && route.meta.sideDisplay
                 })
             }
-        },
-        methods: {
-            openURL
         }
     }
 </script>
 
-<style scoped>
+<style lang="stylus" scoped>
+    .drawer-link {
+        text-decoration: none;
+        outline: 0;
+        cursor: pointer;
+    }
 
+    a:link, a:visited {
+        color black
+    }
 </style>
